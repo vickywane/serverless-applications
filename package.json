@@ -1,0 +1,17 @@
+{
+    "name": "functions",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "dependencies": {
+        "@google-cloud/firestore": "^4.4.0",
+        "@google-cloud/functions-framework": "^1.7.1",
+        "dotenv": "^8.2.0",
+        "nodemon": "^2.0.4",
+        "path": "^0.12.7"
+    },
+    "scripts": {
+        "start": "functions-framework --target=firestoreFunction",
+        "dev": "nodemon index.js"
+    }
+}
