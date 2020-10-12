@@ -3,25 +3,33 @@ const { Firestore } = require("@google-cloud/firestore");
 const path = require("path");
 
 exports.firestoreFunction = function (req, res) {
-    const { name, email, type } = req;
-
-    switch (type) {
-        case "READ":
-            break;
-        default:
-            break;
-    }
-
+    const { name, email, type } = req.body;
     const firestore = new Firestore({
         keyFilename: path.join(__dirname, "./service-key.json"),
     });
 
     const document = firestore.collection("users");
+    console.log(type);
 
-    //console.log(document, "document");
+    if (!type) {
+        res.status(422).send("An action type was not specified");
+    }
 
-    document.add({
-        title: "John Nwani",
-        email: "john@gmail.com",
-    });
+    switch (type) {
+        case "CREATE":
+            document.add({
+                username: name,
+                email: email,
+            });
+
+        case "READ":
+            break;
+
+        case "GET":
+            break;
+        case "UPDATE":
+            break;
+        default:
+            break;
+    }
 };
