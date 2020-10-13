@@ -27,9 +27,9 @@ exports.firestoreFunction = function (req, res) {
     })
     .catch((e) => console.log("error" , e));
 
-if (!type) {
-    //res.status(422).send("An action type was not specified");
-}
+// if (!type) {
+//     //res.status(422).send("An action type was not specified");
+// }
 
 // switch (type) {
 //     case "CREATE":
