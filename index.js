@@ -3,6 +3,7 @@ const { Firestore } = require("@google-cloud/firestore");
 const path = require("path");
 
 exports.firestoreFunction = function (req, res) {
+    res.set("Access-Control-Allow-Origin", "*");
     const { name, email, type } = req.body;
     const firestore = new Firestore({
         keyFilename: path.join(__dirname, "./service-key.json"),
