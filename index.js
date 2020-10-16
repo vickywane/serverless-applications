@@ -3,16 +3,19 @@ const { Firestore } = require("@google-cloud/firestore");
 const path = require("path");
 const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 const cors = require("cors")({ origin: true });
+const bcrypt = require("bcrypt")
 
 const client = new SecretManagerServiceClient();
 
 const hashPassword = password => {
-   const newPassword = ""
+    const salt  = bcrypt.genSalt(10)
+
+    const newPassword = bcrypt.hashSync(password, salt)
 
     return newPassword
 }
 
-exports.firestoreFunction = function (req, res) {
+exports.firestoreAuthenticationFunction = function (req, res) {
    return cors(req, res, () => {
         const { email, password, type } = req.body;
 
@@ -35,7 +38,7 @@ exports.firestoreFunction = function (req, res) {
         }
 
         switch (type) {
-            case "CREATE":
+            case "CREATE-USER":
                 document
                     .add({
                         email: email,
@@ -46,17 +49,13 @@ exports.firestoreFunction = function (req, res) {
                         res.status(501).send(`error inserting data : ${e}`)
                     );
 
-            case "READ":
+            case "LOGIN-USER":
                 document.get().then(response => {
-
+                    
                 }).catch(e => res.status(501).send(`error occurred from pulling data ${e}`))
 
                 break;
 
-            case "GET":
-                break;
-            case "UPDATE":
-                break;
             default:
                 res.status(422).send(`${type} is not a valid function action`)
         }

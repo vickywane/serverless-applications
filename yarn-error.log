@@ -1,5 +1,5 @@
 Arguments: 
-  /home/victory/.nvm/versions/node/v14.13.0/bin/node /home/victory/.nvm/versions/node/v14.13.0/bin/yarn add jsonParser
+  /home/victory/.nvm/versions/node/v14.13.0/bin/node /home/victory/.nvm/versions/node/v14.13.0/bin/yarn add bycrptjs
 
 PATH: 
   /home/victory/.nvm/versions/node/v14.13.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:usr/local/bin:/home/victory/go/bin
@@ -14,7 +14,7 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/jsonParser: Not found
+  Error: https://registry.yarnpkg.com/bycrptjs: Not found
       at Request.params.callback [as _callback] (/home/victory/.nvm/versions/node/v14.13.0/lib/node_modules/yarn/lib/cli.js:66988:18)
       at Request.self.callback (/home/victory/.nvm/versions/node/v14.13.0/lib/node_modules/yarn/lib/cli.js:140662:22)
       at Request.emit (events.js:314:20)
@@ -36,13 +36,14 @@ npm manifest:
           "@google-cloud/firestore": "^4.4.0",
           "@google-cloud/functions-framework": "^1.7.1",
           "@google-cloud/secret-manager": "^3.2.0",
+          "body-parser": "^1.19.0",
           "cors": "^2.8.5",
           "dotenv": "^8.2.0",
           "nodemon": "^2.0.4",
           "path": "^0.12.7"
       },
       "scripts": {
-          "start": "functions-framework --target=firestoreFunction",
+          "start": "functions-framework --target=firestoreFunction --port=8000",
           "dev": "nodemon index.js"
       }
   }
@@ -279,7 +280,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.1.0.tgz#30fa40c9e7fe07dbc895678cd287024dea241dd9"
     integrity sha512-1Yj8h9Q+QDF5FzhMs/c9+6UntbD5MkRfRwac8DoEm9ZfUBZ7tZ55YcGVAzEe4bXsdQHEk+s9S5wsOKVdZrw0tQ==
   
-  body-parser@1.19.0, body-parser@^1.18.3:
+  body-parser@1.19.0, body-parser@^1.18.3, body-parser@^1.19.0:
     version "1.19.0"
     resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.19.0.tgz#96b2709e57c9c4e09a6fd66a8fd979844f69f08a"
     integrity sha512-dhEPs72UPbDnAQJ9ZKMNTP6ptJaionhP5cBb541nXPlW60Jepo9RV/a4fX4XWW9CuFNK22krhrj1+rgzifNCsw==
