@@ -5,29 +5,21 @@ const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 const cors = require("cors")({ origin: true });
 
 const client = new SecretManagerServiceClient();
-//console.log(client);
+
+const hashPassword = password => {
+   const newPassword = ""
+
+    return newPassword
+}
 
 exports.firestoreFunction = function (req, res) {
-    //   let req = { email: "", email: "", type: "" };
-    //   let res = { email: "", email: "", type: "" };
-    //res.header("Access-Control-Allow-Origin", "*");
-    // res.header(
-    //   "Access-Control-Allow-Origin",
-    //  "Origin, X-Requested-With, Content-Type, Accept"
-    // );
-    //
-    console.log("invoke");
-    return cors(req, res, () => {
+   return cors(req, res, () => {
         const { email, password, type } = req.body;
 
-        console.log(email , password, req.body)
-        //console.log(req.body, "data");
-        
-        const firestore = new Firestore({
+      const firestore = new Firestore({
             keyFilename: path.join(__dirname, "./service-key.json"),
         });
-        //  const type = "";
-        const document = firestore.collection("users");
+       const document = firestore.collection("users");
 
         // const [file] = client
         //     .accessSecretVersion({
@@ -47,7 +39,7 @@ exports.firestoreFunction = function (req, res) {
                 document
                     .add({
                         email: email,
-                        password: password,
+                        password: hashPassword(password)
                     })
                     .then((response) => res.status(200).send(response))
                     .catch((e) =>
@@ -55,6 +47,10 @@ exports.firestoreFunction = function (req, res) {
                     );
 
             case "READ":
+                document.get().then(response => {
+
+                }).catch(e => res.status(501).send(`error occurred from pulling data ${e}`))
+
                 break;
 
             case "GET":
