@@ -3,7 +3,7 @@ const { Firestore } = require("@google-cloud/firestore");
 const path = require("path");
 const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 const cors = require("cors")({ origin: true });
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcryptjs")
 
 const client = new SecretManagerServiceClient();
 

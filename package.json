@@ -15,7 +15,7 @@
         "path": "^0.12.7"
     },
     "scripts": {
-        "start": "functions-framework --target=firestoreFunction --port=8000",
+        "start": "functions-framework --target=firestoreAuthenticationFunction --port=8000",
         "dev": "nodemon index.js"
     }
 }
