@@ -3,26 +3,26 @@ const { Firestore } = require("@google-cloud/firestore");
 const path = require("path");
 const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 const cors = require("cors")({ origin: true });
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
 
 const client = new SecretManagerServiceClient();
 
-const hashPassword = password => {
-    const salt  = bcrypt.genSalt(10)
+const hashPassword = (password) => {
+    const salt = bcrypt.genSalt(10);
 
-    const newPassword = bcrypt.hashSync(password, salt)
+    const newPassword = bcrypt.hashSync(password, salt);
 
-    return newPassword
-}
+    return newPassword;
+};
 
 exports.firestoreAuthenticationFunction = function (req, res) {
-   return cors(req, res, () => {
+    return cors(req, res, () => {
         const { email, password, type } = req.body;
 
-      const firestore = new Firestore({
+        const firestore = new Firestore({
             keyFilename: path.join(__dirname, "./service-key.json"),
         });
-       const document = firestore.collection("users");
+        const document = firestore.collection("users");
 
         // const [file] = client
         //     .accessSecretVersion({
@@ -42,7 +42,7 @@ exports.firestoreAuthenticationFunction = function (req, res) {
                 document
                     .add({
                         email: email,
-                        password: hashPassword(password)
+                        password: hashPassword(password),
                     })
                     .then((response) => res.status(200).send(response))
                     .catch((e) =>
@@ -50,14 +50,19 @@ exports.firestoreAuthenticationFunction = function (req, res) {
                     );
 
             case "LOGIN-USER":
-                document.get().then(response => {
-                    
-                }).catch(e => res.status(501).send(`error occurred from pulling data ${e}`))
+                document
+                    .get()
+                    .then((response) => {})
+                    .catch((e) =>
+                        res
+                            .status(501)
+                            .send(`error occurred from pulling data ${e}`)
+                    );
 
                 break;
 
             default:
-                res.status(422).send(`${type} is not a valid function action`)
+                res.status(422).send(`${type} is not a valid function action`);
         }
     });
 };
