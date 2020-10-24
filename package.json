@@ -1,7 +1,7 @@
 {
     "name": "functions",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "upload/index.js",
     "license": "MIT",
     "dependencies": {
         "@google-cloud/firestore": "^4.4.0",
@@ -14,11 +14,12 @@
         "cors": "^2.8.5",
         "dotenv": "^8.2.0",
         "mailgun.js": "^2.0.1",
+        "nodemailer": "^6.4.14",
         "nodemon": "^2.0.4",
         "path": "^0.12.7"
     },
     "scripts": {
-        "start": "functions-framework --target=firestoreAuthenticationFunction --port=8000",
+        "start": "functions-framework --target=Uploader --port=8000",
         "dev": "nodemon index.js"
     }
 }

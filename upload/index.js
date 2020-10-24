@@ -1,6 +1,6 @@
 require("dotenv").config();
 const Cors = require("cors");
-const Storage = require("@google-cloud/storage");
+const { Storage } = require("@google-cloud/storage");
 const path = require("path");
 
 const StorageClient = new Storage({
@@ -8,7 +8,7 @@ const StorageClient = new Storage({
 });
 const BucketName = "";
 
-exports.uploader = (req, res) => {
+exports.Uploader = (req, res) => {
   return Cors(req, res, () => {
     const { file } = req.body;
 
