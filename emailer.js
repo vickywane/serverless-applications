@@ -1,4 +1,4 @@
-require("dotenv").config();
+      require("dotenv").config();
 var api_key = process.env.MAILGUN_API;
 var domain = process.env.MAILGUN_SANDBOX;
 const nodemailer = require("nodemailer");

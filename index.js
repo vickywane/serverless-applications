@@ -5,7 +5,10 @@ const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 const cors = require("cors")({ origin: true });
 const bcrypt = require("bcryptjs");
 const scheduler = require("@google-cloud/scheduler");
-
+var api_key = process.env.MAILGUN_API;
+var domain = process.env.MAILGUN_SANDBOX;
+const nodemailer = require("nodemailer");
+ 
 // const [file] = client
 //     .accessSecretVersion({
 //         email: "firestore-config",
@@ -26,7 +29,6 @@ exports.firestoreAuthenticationFunction = function (req, res) {
     const ScheduleClient = new scheduler.CloudSchedulerClient();
     console.log(ScheduleClient);
 
-
     if (!type) {
       res.status(422).send("An action type was not specified");
     }
@@ -42,7 +44,7 @@ exports.firestoreAuthenticationFunction = function (req, res) {
             uri: process.env.EMAIL_FUNCTION_ENDPOINT,
             httpMethod: "POST",
             body: {
-              email : ""
+              email: "",
             },
           },
           schedule: "",
@@ -94,5 +96,78 @@ exports.firestoreAuthenticationFunction = function (req, res) {
       default:
         res.status(422).send(`${type} is not a valid function action`);
     }
+  });
+};
+
+exports.Emailer = function (req, res) {
+  const username = process.env.SMTP_USERNAME;
+  const password = process.env.SMTP_PASSWORD;
+
+  let sender = process.env.SENDER;
+  let reciever = req.body.email;
+
+  let type = req.body.type;
+  let token = req.body.token;
+  let user = req.body.name;
+
+  var transport = nodemailer.createTransport({
+    host: process.env.HOST,
+    port: 587,
+    secure: false,
+    auth: {
+      user: username,
+      pass: password,
+    },
+  });
+
+  transport.verify(function (error, success) {
+    if (error) {
+      res
+        .status(401)
+        .send({ error: `failed to connect with stmp. check credentials` });
+    } else {
+      res.status(200).send();
+    }
+  });
+
+  if (reciever == null) {
+    // console.log(req.body)
+    res.status(401).send({ error: `Empty email address` });
+  } else {
+    return transport.sendMail(
+      {
+        from: sender,
+        to: reciever,
+        subject: "Welcome to GetBeta",
+        html: { path: "dist/welcome.html" },
+      },
+      (error, info) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("message sent");
+        }
+        transport.close();
+      }
+    );
+  }
+};
+
+
+exports.uploader = (req, res) => {
+  return Cors(req, res, () => {
+    const { file } = req.body;
+
+    StorageClient.bucket(BucketName)
+      .file(file.name)
+      .on("finish", () => {
+        StorageClient.bucket(BucketName)
+          .file(file.name)
+          .makePublic()
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((e) => console.log(e));
+      });
   });
 };
