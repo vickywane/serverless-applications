@@ -6,12 +6,13 @@ const cors = require("cors")({ origin: true });
 const bcrypt = require("bcryptjs");
 const scheduler = require("@google-cloud/scheduler");
 const { Storage } = require("@google-cloud/storage");
+const { v4: uuid } = require("uuid");
 
 const StorageClient = new Storage({
   keyFilename: path.join(__dirname, "./service-key.json"),
 });
+
 const BucketName = "";
-require("dotenv").config();
 var api_key = process.env.MAILGUN_API;
 var domain = process.env.MAILGUN_SANDBOX;
 const nodemailer = require("nodemailer");
@@ -31,12 +32,10 @@ exports.firestoreAuthenticationFunction = function (req, res) {
   return cors(req, res, () => {
     const { email, password, type } = req.body;
 
-    const firestore = new Firestore({
-      keyFilename: path.join(__dirname, "./service-key.json"),
-    });
+    const firestore = new Firestore();
+
     const document = firestore.collection("users");
     const ScheduleClient = new scheduler.CloudSchedulerClient();
-    console.log(ScheduleClient);
 
     if (!type) {
       res.status(422).send("An action type was not specified");
@@ -69,6 +68,7 @@ exports.firestoreAuthenticationFunction = function (req, res) {
           bcrypt.hash(password, salt, (err, hash) => {
             document
               .add({
+                id: uuid(),
                 email: email,
                 password: hash,
               })
@@ -110,7 +110,11 @@ exports.firestoreAuthenticationFunction = function (req, res) {
 
 exports.Uploader = (req, res) => {
   return Cors(req, res, () => {
-    const { file } = req.body;
+    const { file, userId } = req.body;
+    const firestore = new Firestore({
+      keyFilename: path.join(__dirname, "./service-key.json"),
+    });
+    const document = firestore.collection("users");
 
     StorageClient.bucket(BucketName)
       .file(file.name)
@@ -119,7 +123,9 @@ exports.Uploader = (req, res) => {
           .file(file.name)
           .makePublic()
           .then((response) => {
-            console.log(response);
+            const file_uri = "";
+            // insert the file_uri to the user's data
+            document.where("id", "==", userId);
           })
           .catch((e) => console.log(e));
       });
