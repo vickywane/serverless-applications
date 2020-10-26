@@ -12,7 +12,6 @@ const StorageClient = new Storage({
   keyFilename: path.join(__dirname, "./service-account.json"),
 });
 
-const BucketName = "";
 var api_key = process.env.MAILGUN_API;
 var domain = process.env.MAILGUN_SANDBOX;
 const nodemailer = require("nodemailer");
@@ -32,7 +31,9 @@ exports.firestoreAuthenticationFunction = function (req, res) {
   return cors(req, res, () => {
     const { email, password, type } = req.body;
 
-    const firestore = new Firestore();
+    const firestore = new Firestore({
+      keyFilename: path.join(__dirname, "./service-account.json"),
+    });
 
     const document = firestore.collection("users");
     const ScheduleClient = new scheduler.CloudSchedulerClient();
@@ -125,21 +126,24 @@ exports.Uploader = (req, res) => {
     const firestore = new Firestore({
       keyFilename: path.join(__dirname, "./service-account.json"),
     });
-    const document = firestore.collection("users");
 
-    StorageClient.bucket(BucketName)
-      .file(file.name)
-      .on("finish", () => {
-        StorageClient.bucket(BucketName)
-          .file(file.name)
-          .makePublic()
-          .then((response) => {
-            const file_uri = "";
-            // insert the file_uri to the user's data
-            document.where("id", "==", userId);
-          })
-          .catch((e) => console.log(e));
-      });
+    console.log(file , userId);
+    const document = firestore.collection("users");
+    const Bucket = ""
+
+    // StorageClient.bucket(BucketName)
+    //   .file(file.name)
+    //   .on("finish", () => {
+    //     StorageClient.bucket(BucketName)
+    //       .file(file.name)
+    //       .makePublic()
+    //       .then((response) => {
+    //         const file_uri = `https://storage.googleapis.com/${Bucket}/${file.filename}`;
+
+    //         // document.where("id", "==", userId);
+    //       })
+    //       .catch((e) => console.log(e));
+    //   });
   });
 };
 

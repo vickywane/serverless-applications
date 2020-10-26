@@ -19,7 +19,7 @@
         "uuid": "^8.3.1"
     },
     "scripts": {
-        "start": "functions-framework --target=firestoreAuthenticationFunction --port=8000",
+        "start": "functions-framework --target=Uploader --port=8000",
         "dev": "nodemon index.js"
     }
 }
