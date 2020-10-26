@@ -9,7 +9,7 @@ const { Storage } = require("@google-cloud/storage");
 const { v4: uuid } = require("uuid");
 
 const StorageClient = new Storage({
-  keyFilename: path.join(__dirname, "./service-key.json"),
+  keyFilename: path.join(__dirname, "./service-account.json"),
 });
 
 const BucketName = "";
@@ -37,6 +37,11 @@ exports.firestoreAuthenticationFunction = function (req, res) {
     const document = firestore.collection("users");
     const ScheduleClient = new scheduler.CloudSchedulerClient();
 
+    const parent = ScheduleClient.locationPath(
+      process.env.PROJECT_ID,
+      process.env.LOCATION_ID
+    );
+
     if (!type) {
       res.status(422).send("An action type was not specified");
     }
@@ -52,10 +57,10 @@ exports.firestoreAuthenticationFunction = function (req, res) {
             uri: process.env.EMAIL_FUNCTION_ENDPOINT,
             httpMethod: "POST",
             body: {
-              email: "",
+              email: email,
             },
           },
-          schedule: "",
+          schedule: "*/30 */6 */5 10 4",
           timezone: "Africa/Lagos",
         };
 
@@ -73,13 +78,19 @@ exports.firestoreAuthenticationFunction = function (req, res) {
                 password: hash,
               })
               .then((response) => {
-                ScheduleClient.createJob(request).then(() =>
-                  res.status(200).send(response)
-                );
+                ScheduleClient.createJob(request)
+                  .then((res) => {
+                    console.log(res, "cron response");
+                    res.status(200).send(response);
+                  })
+                  .catch((e) => {
+                    console.log(e, "cron err");
+                    res.status(501).send(`error creating cron job : ${e}`);
+                  });
               })
-              .catch((e) =>
-                res.status(501).send(`error inserting data : ${e}`)
-              );
+              .catch((e) => {
+                res.status(501).send(`error inserting data : ${e}`);
+              });
           });
         });
 
@@ -112,7 +123,7 @@ exports.Uploader = (req, res) => {
   return Cors(req, res, () => {
     const { file, userId } = req.body;
     const firestore = new Firestore({
-      keyFilename: path.join(__dirname, "./service-key.json"),
+      keyFilename: path.join(__dirname, "./service-account.json"),
     });
     const document = firestore.collection("users");
 

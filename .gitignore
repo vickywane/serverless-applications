@@ -1,4 +1,4 @@
 node_modules
-service-key.json
+service-account.json
 uploads.json
 ./node_modules
