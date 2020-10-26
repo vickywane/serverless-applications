@@ -1,16 +1,13 @@
 require("dotenv").config();
 const { Firestore } = require("@google-cloud/firestore");
 const path = require("path");
-const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 const cors = require("cors")({ origin: true });
 const bcrypt = require("bcryptjs");
 const scheduler = require("@google-cloud/scheduler");
 const { Storage } = require("@google-cloud/storage");
 const { v4: uuid } = require("uuid");
 
-const StorageClient = new Storage({
-  keyFilename: path.join(__dirname, "./service-account.json"),
-});
+const StorageClient = new Storage();
 
 var api_key = process.env.MAILGUN_API;
 var domain = process.env.MAILGUN_SANDBOX;
@@ -18,14 +15,6 @@ const nodemailer = require("nodemailer");
 
 const username = process.env.SMTP_USERNAME;
 const password = process.env.SMTP_PASSWORD;
-// const [file] = client
-//     .accessSecretVersion({
-//         email: "firestore-config",
-//     })
-//     .then((res) => {
-//         console.log(res, "sec value");
-//     })
-//     .catch((e) => console.log("error"));
 
 exports.firestoreAuthenticationFunction = function (req, res) {
   return cors(req, res, () => {
@@ -36,7 +25,9 @@ exports.firestoreAuthenticationFunction = function (req, res) {
     });
 
     const document = firestore.collection("users");
-    const ScheduleClient = new scheduler.CloudSchedulerClient();
+    const ScheduleClient = new scheduler.CloudSchedulerClient({
+      keyFilename: path.join(__dirname, "./service-account.json"),
+    });
 
     const parent = ScheduleClient.locationPath(
       process.env.PROJECT_ID,
@@ -69,23 +60,24 @@ exports.firestoreAuthenticationFunction = function (req, res) {
           parent: parent,
           job: job,
         };
+        const id = uuid();
 
         return bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(password, salt, (err, hash) => {
             document
-              .add({
-                id: uuid(),
+              .doc(id)
+              .set({
+                id: id,
                 email: email,
                 password: hash,
+                img_uri: null,
               })
               .then((response) => {
                 ScheduleClient.createJob(request)
-                  .then((res) => {
-                    console.log(res, "cron response");
+                  .then(() => {
                     res.status(200).send(response);
                   })
                   .catch((e) => {
-                    console.log(e, "cron err");
                     res.status(501).send(`error creating cron job : ${e}`);
                   });
               })
@@ -121,29 +113,36 @@ exports.firestoreAuthenticationFunction = function (req, res) {
 };
 
 exports.Uploader = (req, res) => {
-  return Cors(req, res, () => {
+  return cors(req, res, () => {
     const { file, userId } = req.body;
-    const firestore = new Firestore({
-      keyFilename: path.join(__dirname, "./service-account.json"),
-    });
+    // const firestore = new Firestore({
+    //   keyFilename: path.join(__dirname, "./service-account.json"),
+    // });
 
-    console.log(file , userId);
+    const firestore = new Firestore();
+
     const document = firestore.collection("users");
-    const Bucket = ""
+    const Bucket = process.env.BUCKET_NAME;
 
-    // StorageClient.bucket(BucketName)
-    //   .file(file.name)
-    //   .on("finish", () => {
-    //     StorageClient.bucket(BucketName)
-    //       .file(file.name)
-    //       .makePublic()
-    //       .then((response) => {
-    //         const file_uri = `https://storage.googleapis.com/${Bucket}/${file.filename}`;
-
-    //         // document.where("id", "==", userId);
-    //       })
-    //       .catch((e) => console.log(e));
-    //   });
+    StorageClient.bucket(Bucket)
+      .file(file.path)
+      .on("finish", () => {
+        console.log("UPLOADED");
+        StorageClient.bucket(Bucket)
+          .file(file.path)
+          .makePublic()
+          .then(() => {
+            const img_uri = `https://storage.googleapis.com/${Bucket}/${file.path}`;
+            document
+              .doc(userId)
+              .update({
+                img_uri,
+              })
+              .then((updateResult) => res.status(200).send(updateResult))
+              .catch((e) => res.status(500).send(e));
+          })
+          .catch((e) => console.log(e));
+      });
   });
 };
 
