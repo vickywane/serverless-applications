@@ -1,25 +1,25 @@
 {
-  "name": "functions",
-  "version": "1.0.0",
-  "license": "MIT",
-  "dependencies": {
-    "@google-cloud/firestore": "^4.4.0",
-    "@google-cloud/functions-framework": "^1.7.1",
-    "@google-cloud/scheduler": "^2.1.1",
-    "@google-cloud/secret-manager": "^3.2.0",
-    "@google-cloud/storage": "^5.3.0",
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "mailgun.js": "^2.0.1",
-    "nodemailer": "^6.4.14",
-    "nodemon": "^2.0.4",
-    "path": "^0.12.7",
-    "uuid": "^8.3.1"
-  },
-  "scripts": {
-    "start": "functions-framework --target=Uploader --port=8000",
-    "dev": "nodemon index.js"
-  }
+    "name": "functions",
+    "version": "1.0.0",
+    "license": "MIT",
+    "dependencies": {
+        "@google-cloud/firestore": "^4.4.0",
+        "@google-cloud/functions-framework": "^1.7.1",
+        "@google-cloud/scheduler": "^2.1.1",
+        "@google-cloud/secret-manager": "^3.2.0",
+        "@google-cloud/storage": "^5.3.0",
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.19.0",
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "mailgun.js": "^2.0.1",
+        "nodemailer": "^6.4.14",
+        "nodemon": "^2.0.4",
+        "path": "^0.12.7",
+        "uuid": "^8.3.1"
+    },
+    "scripts": {
+        "start": "functions-framework --target=demo --port=8000",
+        "dev": "nodemon index.js"
+    }
 }
